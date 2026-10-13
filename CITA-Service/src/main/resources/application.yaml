@@ -1,6 +1,9 @@
+server:
+  port: 9003
+
 spring:
   application:
-    name: CITA-Service
+    name: CITA-SERVICE
   datasource:
     url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require
     username: postgres.qkesuvqellvqehoudgmh
@@ -10,9 +13,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
-server:
-  port: 9002
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 
 eureka:
   client:
