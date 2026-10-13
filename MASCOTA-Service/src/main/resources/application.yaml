@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: MASCOTA-Service
+  datasource:
+    url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require
+    username: postgres.qkesuvqellvqehoudgmh
+    password: Taoda@2026.
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+server:
+  port: 9004
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

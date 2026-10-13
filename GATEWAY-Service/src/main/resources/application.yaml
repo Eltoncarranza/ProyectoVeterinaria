@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: GATEWAY-Service
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: cliente-route
+          uri: lb://CLIENTE-SERVICE
+          predicates:
+            - Path=/api/clientes, /api/clientes/**
+
+        - id: mascota-route
+          uri: lb://MASCOTA-SERVICE
+          predicates:
+            - Path=/api/mascotas, /api/mascotas/**
+
+        - id: cita-route
+          uri: lb://CITA-SERVICE
+          predicates:
+            - Path=/api/citas, /api/citas/**
+
+        - id: identity-route
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/api/usuario, /api/usuario/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  secret: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
