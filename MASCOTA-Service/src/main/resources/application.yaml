@@ -1,6 +1,6 @@
 spring:
   application:
-    name: MASCOTA-Service
+    name: MASCOTA-SERVICE
   datasource:
     url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require
     username: postgres.qkesuvqellvqehoudgmh
@@ -10,8 +10,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
 server:
-  port: 9004
+  port: 9002
 
 eureka:
   client:

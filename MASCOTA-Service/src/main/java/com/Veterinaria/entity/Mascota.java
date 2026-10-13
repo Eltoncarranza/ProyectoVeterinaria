@@ -1,4 +1,4 @@
-package com.Veterinaria.Entity;
+package com.Veterinaria.entity;
 
 import jakarta.persistence.*;
 

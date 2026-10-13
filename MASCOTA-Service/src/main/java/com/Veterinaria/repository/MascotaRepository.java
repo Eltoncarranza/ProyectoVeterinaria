@@ -1,7 +1,7 @@
 package com.Veterinaria.repository;
 
 
-import com.Veterinaria.Entity.Mascota;
+import com.Veterinaria.entity.Mascota;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
