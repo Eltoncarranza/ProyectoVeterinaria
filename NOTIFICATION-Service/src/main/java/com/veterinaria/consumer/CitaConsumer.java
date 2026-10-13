@@ -8,7 +8,7 @@ public class CitaConsumer {
 
     @RabbitListener(queues = "cita.queue")
     public void procesarNotificacion(String mensaje) {
-        // En un entorno real, aquí conectarías con Twilio (SMS), SendGrid (Email) o WhatsApp API.
+
         System.out.println("==================================================");
         System.out.println("🔔 [ALERTA DE NOTIFICACIÓN ASÍNCRONA]");
         System.out.println("📩 Contenido: " + mensaje);
