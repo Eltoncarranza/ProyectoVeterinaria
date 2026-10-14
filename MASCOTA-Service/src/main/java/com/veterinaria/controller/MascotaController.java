@@ -2,8 +2,8 @@ package com.veterinaria.controller;
 
 import com.veterinaria.entity.Mascota;
 import com.veterinaria.service.MascotaService;
+import com.veterinaria.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity; // IMPORTANTE
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,10 +21,9 @@ public class MascotaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Mascota> obtenerMascotaPorId(@PathVariable Long id) {
+    public Mascota obtenerMascotaPorId(@PathVariable Long id) {
         return mascotaService.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró ninguna mascota con el ID: " + id));
     }
 
     @PostMapping

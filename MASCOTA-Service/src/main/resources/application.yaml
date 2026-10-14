@@ -10,7 +10,16 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    doc-expansion: none
+    syntax-highlight:
+      theme: monokai
 server:
   port: 9002
 
