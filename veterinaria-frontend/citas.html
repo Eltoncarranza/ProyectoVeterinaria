@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Citas - VetSystem</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🐾 VetSystem Pro</div>
+        <div class="nav-links">
+            <a href="clientes.html">Clientes</a>
+            <a href="mascotas.html">Mascotas</a>
+            <a href="citas.html" class="active">Citas</a>
+            <a href="medicamentos.html">Medicamentos</a>
+        </div>
+        <button id="btnCerrarSesion" class="btn-danger">Cerrar Sesión</button>
+    </nav>
+
+    <div class="main-container">
+        <h1>Gestión de Citas Médicas</h1>
+        
+        <div class="card">
+            <h3>Agendar Nueva Cita</h3>
+            <form id="formCita">
+                <div class="input-group">
+                    <label>ID de la Mascota</label>
+                    <input type="number" id="mascotaId" required placeholder="Ej: 1">
+                </div>
+                <div class="input-group">
+                    <label>Fecha y Hora</label>
+                    <input type="datetime-local" id="fechaCita" required>
+                </div>
+                <div class="input-group">
+                    <label>Motivo</label>
+                    <input type="text" id="motivo" required placeholder="Ej: Control general">
+                </div>
+                <button type="submit" class="btn-success">Agendar Cita</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Listado de Citas Programadas</h3>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>ID Cita</th>
+                        <th>ID Mascota</th>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCitas">
+                    <!-- Dinámico -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/citas.js"></script>
+</body>
+</html>

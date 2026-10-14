@@ -5,10 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "editor-browser",
+            "type": "chrome",
             "request": "launch",
-            "name": "Open index.html",
-            "url": "file:///c%3A/Users/elton/OneDrive/Documentos/Cibertec/Desarrollo%20de%20Aplicaciones%20Web%202/veterinaria-frontend/index.html"
+            "name": "Iniciar Chrome para localhost",
+            "url": "http://127.0.0.1:5500/login.html](http://127.0.0.1:5500/login.html",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }

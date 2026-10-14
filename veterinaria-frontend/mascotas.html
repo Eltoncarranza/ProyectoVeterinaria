@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mascotas - VetSystem</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <!-- Menú de Navegación Superior -->
+    <nav class="navbar">
+        <div class="nav-brand">🐾 VetSystem Pro</div>
+        <div class="nav-links">
+            <a href="clientes.html">Clientes</a>
+            <a href="mascotas.html" class="active">Mascotas</a>
+            <a href="citas.html">Citas</a>
+            <a href="medicamentos.html">Medicamentos</a>
+        </div>
+        <button id="btnCerrarSesion" class="btn-danger">Cerrar Sesión</button>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="main-container">
+        <h1>Gestión de Mascotas</h1>
+        
+        <div class="card">
+            <h3>Registrar Nueva Mascota</h3>
+            <form id="formMascota">
+                <div class="input-group">
+                    <label>Nombre</label>
+                    <input type="text" id="nombre" required>
+                </div>
+                <div class="input-group">
+                    <label>Raza</label>
+                    <input type="text" id="raza" required>
+                </div>
+                <button type="submit" class="btn-success">Guardar</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Listado de Mascotas</h3>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Raza</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaMascotas">
+                    <!-- Dinámico con JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/mascotas.js"></script>
+</body>
+</html>

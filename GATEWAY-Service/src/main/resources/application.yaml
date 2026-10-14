@@ -16,7 +16,7 @@ spring:
         - id: cliente-route
           uri: lb://CLIENTE-SERVICE
           predicates:
-            - Path=/api/clientes, /api/clientes/**
+          - Path=/api/clientes, /api/clientes/**
 
         - id: mascota-route
           uri: lb://MASCOTA-SERVICE
@@ -27,6 +27,11 @@ spring:
           uri: lb://CITA-SERVICE
           predicates:
             - Path=/api/citas/**
+
+        - id: medicamento-service
+          uri: lb://MEDICAMENTO-SERVICE
+          predicates:
+            - Path=/api/medicamentos/**
 
         - id: identity-service
           uri: lb://IDENTITY-SERVICE
