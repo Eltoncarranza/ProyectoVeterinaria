@@ -1,5 +1,6 @@
 package com.veterinaria.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,8 @@ public class Usuario {
     @Column(unique = true, nullable = false)
     private String username;
 
+    // Se acepta al recibir JSON (login y registro), pero nunca se devuelve en las respuestas
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 

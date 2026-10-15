@@ -8,8 +8,7 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
-          lower-case-service-id: true
+          enabled: false
       routes:
         - id: identity-service
           uri: lb://IDENTITY-Service
@@ -27,6 +26,7 @@ spring:
           uri: lb://CITA-Service
           predicates:
             - Path=/api/citas/**
+
 
 jwt:
   secret: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"

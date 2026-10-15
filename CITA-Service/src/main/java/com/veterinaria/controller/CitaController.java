@@ -1,5 +1,6 @@
 package com.veterinaria.controller;
 
+import com.veterinaria.dto.CitaRequest;
 import com.veterinaria.entity.Cita;
 import com.veterinaria.service.CitaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,30 +22,13 @@ public class CitaController {
     }
 
     @PostMapping
-    public ResponseEntity<Cita> crearCita(@RequestBody Cita cita) {
-        // Aseguramos un estado por defecto si viene vacío
-        if (cita.getEstado() == null || cita.getEstado().isEmpty()) {
-            cita.setEstado("PENDIENTE");
-        }
-        Cita nuevaCita = citaService.guardar(cita);
-        return ResponseEntity.ok(nuevaCita);
+    public ResponseEntity<Cita> crearCita(@RequestBody CitaRequest request) {
+        return ResponseEntity.ok(citaService.crear(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cita> actualizarCita(@PathVariable Long id, @RequestBody Cita citaDetails) {
-        return citaService.obtenerPorId(id).map(citaExistente -> {
-            if (citaDetails.getEstado() != null) {
-                citaExistente.setEstado(citaDetails.getEstado());
-            }
-            if (citaDetails.getMotivo() != null) {
-                citaExistente.setMotivo(citaDetails.getMotivo());
-            }
-            if (citaDetails.getFechaHora() != null) {
-                citaExistente.setFechaHora(citaDetails.getFechaHora());
-            }
-            Cita actualizada = citaService.guardar(citaExistente);
-            return ResponseEntity.ok(actualizada);
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Cita> actualizarCita(@PathVariable Long id, @RequestBody CitaRequest request) {
+        return ResponseEntity.ok(citaService.actualizar(id, request));
     }
 
     @DeleteMapping("/{id}")

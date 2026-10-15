@@ -1,8 +1,14 @@
 if (typeof verificarSesion === 'function') verificarSesion();
 if (typeof configurarCerrarSesion === 'function') configurarCerrarSesion();
 
-let diccionarioMascotas = {}; 
-let todasLasCitas = []; 
+let diccionarioMascotas = {};
+let todasLasCitas = [];
+
+function escapar(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     configurarFechaMinima();
@@ -25,12 +31,14 @@ async function cargarMascotasDropdown() {
         if (respuesta && respuesta.ok) {
             const mascotas = await respuesta.json();
             const select = document.getElementById("mascotaId");
-            select.innerHTML = '<option value="">Seleccione una mascota...</option>';
-            
+            let opciones = '<option value="">Seleccione una mascota...</option>';
+
             mascotas.forEach(m => {
-                diccionarioMascotas[m.id] = m.nombre; 
-                select.innerHTML += `<option value="${m.id}">${m.nombre} (${m.especie || 'Mascota'})</option>`;
+                diccionarioMascotas[m.id] = m.nombre;
+                opciones += `<option value="${m.id}">${escapar(m.nombre)} (${escapar(m.especie || "Mascota")})</option>`;
             });
+
+            select.innerHTML = opciones;
         }
     } catch (error) {
         console.error("Error al cargar mascotas:", error);
@@ -39,15 +47,15 @@ async function cargarMascotasDropdown() {
 
 document.getElementById("formCita").addEventListener("submit", async (e) => {
     e.preventDefault();
-    
+
     let rawDate = document.getElementById("fecha").value;
-    if(rawDate.length === 16) { 
-        rawDate += ":00"; 
+    if (rawDate.length === 16) {
+        rawDate += ":00";
     }
 
     const cita = {
         mascotaId: parseInt(document.getElementById("mascotaId").value),
-        fechaHora: rawDate, 
+        fechaHora: rawDate,
         motivo: document.getElementById("motivo").value,
         estado: "PENDIENTE"
     };
@@ -79,7 +87,7 @@ async function cambiarEstadoCita(idCita, nuevoEstado) {
         });
 
         if (respuesta && respuesta.ok) {
-            await cargarCitas(); 
+            await cargarCitas();
         } else {
             alert("No se pudo actualizar el estado de la cita.");
         }
@@ -91,7 +99,7 @@ async function cambiarEstadoCita(idCita, nuevoEstado) {
 function obtenerInicioSemana(fecha) {
     const d = new Date(fecha);
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
     return new Date(d.setDate(diff));
 }
 
@@ -111,15 +119,16 @@ async function cargarCitas() {
 function renderizarAgenda(citas) {
     const contenedor = document.getElementById("agendaContenedor");
     contenedor.innerHTML = "";
-    
+
     if (!citas || citas.length === 0) {
         contenedor.innerHTML = '<p style="color: #666; grid-column: 1/-1; text-align: center; padding: 20px;">No hay citas programadas.</p>';
         return;
     }
 
+    const puedeEliminar = esAdmin();
+
     citas.sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora));
 
-    // Agrupar por semanas
     const semanasMap = {};
 
     citas.forEach(c => {
@@ -134,24 +143,21 @@ function renderizarAgenda(citas) {
                 const finSemana = new Date(inicioSemana);
                 finSemana.setDate(inicioSemana.getDate() + 6);
 
-                const opcionesFecha = { day: 'numeric', month: 'short' };
+                const opcionesFecha = { day: "numeric", month: "short" };
                 claveSemana = inicioSemana.toISOString().slice(0, 10);
-                etiquetaSemana = `🗓️ Semana del ${inicioSemana.toLocaleDateString('es-PE', opcionesFecha)} al ${finSemana.toLocaleDateString('es-PE', opcionesFecha)} de ${finSemana.getFullYear()}`;
+                etiquetaSemana = `🗓️ Semana del ${inicioSemana.toLocaleDateString("es-PE", opcionesFecha)} al ${finSemana.toLocaleDateString("es-PE", opcionesFecha)} de ${finSemana.getFullYear()}`;
             }
         }
 
         if (!semanasMap[claveSemana]) {
-            semanasMap[claveSemana] = {
-                titulo: etiquetaSemana,
-                citas: []
-            };
+            semanasMap[claveSemana] = { titulo: etiquetaSemana, citas: [] };
         }
         semanasMap[claveSemana].citas.push(c);
     });
 
     Object.keys(semanasMap).sort().forEach(clave => {
         const grupo = semanasMap[clave];
-        
+
         const seccionSemana = document.createElement("div");
         seccionSemana.style.gridColumn = "1 / -1";
         seccionSemana.innerHTML = `
@@ -165,8 +171,9 @@ function renderizarAgenda(citas) {
         gridSemana.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; width: 100%; grid-column: 1 / -1;";
 
         grupo.citas.forEach(c => {
-            const nombreMascota = diccionarioMascotas[c.mascotaId] || `Mascota ID: ${c.mascotaId}`;
-            
+            const nombreMascota = escapar(diccionarioMascotas[c.mascotaId] || `Mascota ID: ${c.mascotaId}`);
+            const motivo = escapar(c.motivo || "");
+
             let mes = "CITA";
             let dia = "--";
             let diaSemana = "Fecha pendiente";
@@ -175,22 +182,28 @@ function renderizarAgenda(citas) {
             if (c.fechaHora) {
                 const dateObj = new Date(c.fechaHora);
                 if (!isNaN(dateObj.getTime())) {
-                    mes = dateObj.toLocaleDateString('es-PE', { month: 'short' }).toUpperCase();
-                    dia = dateObj.toLocaleDateString('es-PE', { day: '2-digit' });
-                    hora = dateObj.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
-                    diaSemana = dateObj.toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    mes = dateObj.toLocaleDateString("es-PE", { month: "short" }).toUpperCase();
+                    dia = dateObj.toLocaleDateString("es-PE", { day: "2-digit" });
+                    hora = dateObj.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+                    diaSemana = dateObj.toLocaleDateString("es-PE", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
                 }
             }
 
             const esCumplida = c.estado === "CUMPLIDA" || c.estado === "COMPLETADA";
             const colorBorde = esCumplida ? "#adb5bd" : "#20c997";
-            const badgeEstado = esCumplida 
+            const badgeEstado = esCumplida
                 ? '<span style="background: #e9ecef; color: #2b8a3e; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold;">CUMPLIDA ✔</span>'
                 : '<span style="background: #fff9db; color: #f59f00; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold;">PENDIENTE ⏳</span>';
 
+            const botonEliminar = puedeEliminar
+                ? `<button onclick="eliminarCita(${c.id})" style="background: #fa5252; color: white; border: none; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        Eliminar Cita 🗑️
+                   </button>`
+                : "";
+
             const tarjeta = document.createElement("div");
-            tarjeta.style.cssText = `background: #ffffff; border-left: 5px solid ${colorBorde}; border-radius: 8px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; opacity: ${esCumplida ? '0.75' : '1'};`;
-            
+            tarjeta.style.cssText = `background: #ffffff; border-left: 5px solid ${colorBorde}; border-radius: 8px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; opacity: ${esCumplida ? "0.75" : "1"};`;
+
             tarjeta.innerHTML = `
     <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -201,7 +214,7 @@ function renderizarAgenda(citas) {
         </div>
         
         <div style="font-size: 1.1em; font-weight: bold; color: #343a40;">🐾 ${nombreMascota}</div>
-        <p style="margin: 10px 0; font-size: 0.95em; color: #495057;"><strong>Motivo:</strong> ${c.motivo}</p>
+        <p style="margin: 10px 0; font-size: 0.95em; color: #495057;"><strong>Motivo:</strong> ${motivo}</p>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
@@ -214,10 +227,8 @@ function renderizarAgenda(citas) {
                 Marcar como Pendiente ↺
             </button>
         `}
-        
-        <button class="solo-admin" onclick="eliminarCita(${c.id})" style="background: #fa5252; color: white; border: none; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            Eliminar Cita 🗑️
-        </button>
+
+        ${botonEliminar}
     </div>
 `;
             gridSemana.appendChild(tarjeta);
@@ -226,20 +237,23 @@ function renderizarAgenda(citas) {
         contenedor.appendChild(gridSemana);
     });
 }
+
 async function eliminarCita(id) {
-    if (confirm("¿Estás seguro de que deseas eliminar esta cita de la agenda?")) {
-        try {
-            const respuesta = await peticionSegura(`/api/citas/${id}`, { method: "DELETE" });
-            
-            if (respuesta && respuesta.ok) {
-                alert("Cita eliminada correctamente.");
-                await cargarCitas();
-            } else {
-                alert("Error al eliminar la cita en el servidor.");
-            }
-        } catch (e) {
-            console.error("Error de red al eliminar la cita:", e);
-            alert("Error de conexión al intentar eliminar.");
+    if (!confirm("¿Estás seguro de que deseas eliminar esta cita de la agenda?")) return;
+
+    try {
+        const respuesta = await peticionSegura(`/api/citas/${id}`, { method: "DELETE" });
+
+        if (respuesta && respuesta.ok) {
+            alert("Cita eliminada correctamente.");
+            await cargarCitas();
+        } else if (respuesta && respuesta.status === 403) {
+            alert("No tienes permisos para eliminar citas.");
+        } else {
+            alert("Error al eliminar la cita en el servidor.");
         }
+    } catch (e) {
+        console.error("Error de red al eliminar la cita:", e);
+        alert("Error de conexión al intentar eliminar.");
     }
 }

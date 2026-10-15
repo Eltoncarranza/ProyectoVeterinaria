@@ -1,3 +1,7 @@
+
+server:
+  port: 9001
+
 spring:
   application:
     name: CLIENTE-SERVICE
@@ -9,12 +13,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
-
-server:
-  port: 9001
+    show-sql: false
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+reniec:
+  url: "https://dniruc.apisperu.com/api/v1/dni/{dni}"
+  token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVsdG9uY2FycmFuemE3LjdAZ21haWwuY29tIiwianRpIjoiNDRhMjViOTBkMjIzMTI4MSJ9.0TLSjffhjow-Ev8OXHGiy_GE_ihFaoM7HhHodZOKzA8"
