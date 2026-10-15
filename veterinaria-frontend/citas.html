@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Citas - VetSystem</title>
+    <title>Agenda de Citas - VetSystem Pro</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
@@ -18,42 +18,35 @@
     </nav>
 
     <div class="main-container">
-        <h1>Gestión de Citas Médicas</h1>
+        <h1>Agenda y Calendario de Citas</h1>
         
         <div class="card">
             <h3>Agendar Nueva Cita</h3>
             <form id="formCita">
                 <div class="input-group">
-                    <label>ID de la Mascota</label>
-                    <input type="number" id="mascotaId" required placeholder="Ej: 1">
+                    <label>Seleccionar Mascota (Paciente)</label>
+                    <select id="mascotaId" required>
+                        <option value="">Cargando mascotas...</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label>Fecha y Hora</label>
-                    <input type="datetime-local" id="fechaCita" required>
+                    <input type="datetime-local" id="fecha" required>
                 </div>
                 <div class="input-group">
-                    <label>Motivo</label>
-                    <input type="text" id="motivo" required placeholder="Ej: Control general">
+                    <label>Motivo de la Consulta</label>
+                    <input type="text" id="motivo" required placeholder="Ej: Control general y vacunas">
                 </div>
-                <button type="submit" class="btn-success">Agendar Cita</button>
+                <button type="submit" class="btn-success">Agendar Cita en Agenda</button>
             </form>
         </div>
 
+        <!-- Vista tipo Agenda / Calendario Dinámico -->
         <div class="card">
-            <h3>Listado de Citas Programadas</h3>
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>ID Cita</th>
-                        <th>ID Mascota</th>
-                        <th>Fecha</th>
-                        <th>Motivo</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaCitas">
-                    <!-- Dinámico -->
-                </tbody>
-            </table>
+            <h3>Vista de Citas Programadas</h3>
+            <div id="agendaContenedor" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px;">
+                <!-- Las tarjetas de citas se cargarán aquí dinámicamente -->
+            </div>
         </div>
     </div>
 

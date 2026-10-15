@@ -24,8 +24,20 @@
             <h3>Registrar Nuevo Cliente</h3>
             <form id="formCliente">
                 <div class="input-group">
-                    <label>Nombre</label>
-                    <input type="text" id="nombreCliente" required>
+                    <label>DNI</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="dniCliente" placeholder="Ingrese DNI" maxlength="8" required>
+                        <button type="button" id="btnBuscarDni" class="btn-info">🔍 Buscar RENIEC</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Nombres</label>
+                    <input type="text" id="nombreCliente" required readonly placeholder="Se autocompletará">
+                </div>
+                <div class="input-group">
+                    <label>Apellidos</label>
+                    <!-- Agregamos este campo para los apellidos -->
+                    <input type="text" id="apellidosCliente" required readonly placeholder="Se autocompletará">
                 </div>
                 <div class="input-group">
                     <label>Teléfono</label>
@@ -45,7 +57,9 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
+                        <th>DNI</th>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
                         <th>Teléfono</th>
                         <th>Email</th>
                     </tr>

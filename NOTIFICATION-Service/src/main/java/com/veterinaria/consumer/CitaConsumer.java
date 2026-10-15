@@ -10,9 +10,9 @@ public class CitaConsumer {
     public void procesarNotificacion(String mensaje) {
 
         System.out.println("==================================================");
-        System.out.println("🔔 [ALERTA DE NOTIFICACIÓN ASÍNCRONA]");
-        System.out.println("📩 Contenido: " + mensaje);
-        System.out.println("✅ Procesamiento completado sin bloquear el sistema central.");
+        System.out.println(" [ALERTA DE NOTIFICACIÓN ASÍNCRONA]");
+        System.out.println(" Contenido: " + mensaje);
+        System.out.println(" Procesamiento completado sin bloquear el sistema central.");
         System.out.println("==================================================");
     }
 }

@@ -27,12 +27,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
-        // 1. Permitir acceso libre a las rutas de autenticación, clientes, mascotas y citas
         if (path.contains("/api/auth") || path.contains("/api/clientes") || path.contains("/api/mascotas") || path.contains("/api/citas")) {
             return chain.filter(exchange);
         }
 
-        // 2. Validar cabecera Authorization en rutas protegidas
         if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
             return onError(exchange, HttpStatus.UNAUTHORIZED);
         }
@@ -62,6 +60,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -1; // Ejecutar este filtro al principio de la cadena
+        return -1;
     }
 }

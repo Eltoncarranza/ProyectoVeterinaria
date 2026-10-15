@@ -47,7 +47,39 @@ async function peticionSegura(endpoint, opciones = {}) {
         throw error;
     }
 }
+// ==========================================
+// UTILIDADES DE CONTROL DE ROLES (ADMIN / USER)
+// ==========================================
 
+// Decodifica el Token JWT para extraer información (como el rol o el username)
+function obtenerPayloadJWT() {
+    const token = localStorage.getItem('tokenJWT');
+    if (!token) return null;
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error("Error al leer el token:", e);
+        return null;
+    }
+}
+
+// Devuelve el rol del usuario ('ADMIN' o 'USER')
+function obtenerRolUsuario() {
+    const payload = obtenerPayloadJWT();
+    // Si tu token guarda el rol en una propiedad llamada 'rol', 'role' o 'authorities', cámbiala aquí:
+    return payload ? (payload.rol || payload.role || 'USER') : 'USER';
+}
+
+// Valida si el usuario actual es Administrador
+function esAdmin() {
+    const rol = obtenerRolUsuario();
+    return rol.toUpperCase() === 'ADMIN';
+}
 function configurarCerrarSesion() {
     const btnLogout = document.getElementById('btnCerrarSesion');
     if (btnLogout) {

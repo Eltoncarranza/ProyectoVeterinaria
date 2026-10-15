@@ -2,7 +2,7 @@ spring:
   application:
     name: CLIENTE-SERVICE
   datasource:
-    url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require
+    url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
     username: postgres.qkesuvqellvqehoudgmh
     password: Taoda@2026.
     driver-class-name: org.postgresql.Driver

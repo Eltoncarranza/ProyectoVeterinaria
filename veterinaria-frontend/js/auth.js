@@ -1,3 +1,6 @@
+// ==========================================
+// LÓGICA PARA EL LOGIN
+// ==========================================
 const formLogin = document.getElementById('formLogin');
 
 if (formLogin) {
@@ -15,12 +18,8 @@ if (formLogin) {
             });
 
             if (respuesta.ok) {
-                const token = await respuesta.text(); // El backend devuelve el token en texto plano
-                
-                // Paso 2: Almacenamiento seguro en el navegador
+                const token = await respuesta.text(); 
                 localStorage.setItem('tokenJWT', token);
-                
-                // Redirigir al módulo principal (Mascotas)
                 window.location.href = 'mascotas.html';
             } else {
                 errorMsg.style.display = 'block';
@@ -29,6 +28,51 @@ if (formLogin) {
             console.error("Error al conectar con el servidor:", error);
             errorMsg.textContent = "Error de conexión con el servidor";
             errorMsg.style.display = 'block';
+        }
+    });
+}
+
+// ==========================================
+// LÓGICA PARA EL REGISTRO (AQUÍ ESTABA EL FALLO)
+// ==========================================
+const formRegistro = document.getElementById('formRegistro');
+
+if (formRegistro) {
+    formRegistro.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Evita que la página se recargue
+        
+        const username = document.getElementById('regUsername').value;
+        const password = document.getElementById('regPassword').value;
+        const rol = document.getElementById('regRol').value;
+        const successMsg = document.getElementById('successMsg');
+
+        try {
+            // Hacemos POST al endpoint de registro a través del Gateway
+            const respuesta = await fetch('http://localhost:8080/api/auth/registrar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, rol }) // Mapea con tu entidad Usuario en Java
+            });
+
+            if (respuesta.ok) {
+                successMsg.style.display = 'block';
+                successMsg.style.color = 'green';
+                successMsg.textContent = '¡Cuenta creada! Redirigiendo al login...';
+                
+                // Redirigir al login después de 2 segundos para que el usuario ingrese
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            } else {
+                successMsg.style.display = 'block';
+                successMsg.style.color = 'red';
+                successMsg.textContent = 'Error al registrar el usuario. Intenta con otro nombre.';
+            }
+        } catch (error) {
+            console.error("Error de conexión:", error);
+            successMsg.style.display = 'block';
+            successMsg.style.color = 'red';
+            successMsg.textContent = 'Error de conexión con el servidor.';
         }
     });
 }

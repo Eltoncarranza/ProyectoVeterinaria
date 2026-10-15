@@ -15,7 +15,6 @@ public class ErrorResponse {
         this.estadoHttp = estadoHttp;
     }
 
-    // Getters
     public LocalDateTime getFechaHora() { return fechaHora; }
     public String getMensaje() { return mensaje; }
     public String getDetalles() { return detalles; }

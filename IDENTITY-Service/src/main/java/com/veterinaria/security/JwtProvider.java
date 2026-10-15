@@ -19,7 +19,6 @@ public class JwtProvider {
     @Value("${jwt.expiration}")
     private int expiration;
 
-    // Método que recibe todo el objeto Usuario (el que ya tienes)
     public String generarToken(Usuario usuario) {
         Key key = Keys.hmacShaKeyFor(secret.getBytes());
         return Jwts.builder()
@@ -32,7 +31,6 @@ public class JwtProvider {
                 .compact();
     }
 
-    // Sobrecarga por si le pasas solamente un String (username) desde alguna otra parte
     public String generarToken(String username) {
         Key key = Keys.hmacShaKeyFor(secret.getBytes());
         return Jwts.builder()

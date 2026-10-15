@@ -20,50 +20,36 @@ public class CitaController {
         return citaService.obtenerTodas();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Cita> obtenerCita(@PathVariable Long id) {
-        return citaService.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<Cita>> listarPorCliente(@PathVariable Long clienteId) {
-        List<Cita> citas = citaService.obtenerPorClienteId(clienteId);
-        return ResponseEntity.ok(citas);
-    }
-
-    @GetMapping("/mascota/{mascotaId}")
-    public ResponseEntity<List<Cita>> listarPorMascota(@PathVariable Long mascotaId) {
-        List<Cita> citas = citaService.obtenerPorMascotaId(mascotaId);
-        return ResponseEntity.ok(citas);
-    }
-
-    @GetMapping("/pendientes")
-    public ResponseEntity<List<Cita>> listarPendientes() {
-        return ResponseEntity.ok(citaService.obtenerPendientes());
-    }
-
     @PostMapping
-    public Cita crearCita(@RequestBody Cita cita) {
-        return citaService.guardar(cita);
+    public ResponseEntity<Cita> crearCita(@RequestBody Cita cita) {
+        // Aseguramos un estado por defecto si viene vacío
+        if (cita.getEstado() == null || cita.getEstado().isEmpty()) {
+            cita.setEstado("PENDIENTE");
+        }
+        Cita nuevaCita = citaService.guardar(cita);
+        return ResponseEntity.ok(nuevaCita);
     }
 
-    @PutMapping("/{id}/estado")
-    public ResponseEntity<Cita> cambiarEstado(@PathVariable Long id, @RequestParam String estado) {
-        Cita citaActualizada = citaService.actualizarEstado(id, estado);
-        if (citaActualizada != null) {
-            return ResponseEntity.ok(citaActualizada);
-        }
-        return ResponseEntity.notFound().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<Cita> actualizarCita(@PathVariable Long id, @RequestBody Cita citaDetails) {
+        return citaService.obtenerPorId(id).map(citaExistente -> {
+            if (citaDetails.getEstado() != null) {
+                citaExistente.setEstado(citaDetails.getEstado());
+            }
+            if (citaDetails.getMotivo() != null) {
+                citaExistente.setMotivo(citaDetails.getMotivo());
+            }
+            if (citaDetails.getFechaHora() != null) {
+                citaExistente.setFechaHora(citaDetails.getFechaHora());
+            }
+            Cita actualizada = citaService.guardar(citaExistente);
+            return ResponseEntity.ok(actualizada);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarCita(@PathVariable Long id) {
-        if (citaService.obtenerPorId(id).isPresent()) {
-            citaService.eliminar(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        citaService.eliminar(id);
+        return ResponseEntity.ok().build();
     }
 }

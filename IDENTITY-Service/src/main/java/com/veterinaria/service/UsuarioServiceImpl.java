@@ -21,18 +21,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario guardarUsuario(Usuario usuario) {
-        // Encriptar la contraseña antes de guardarla en Supabase por seguridad
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
 
     @Override
     public String autenticarYGenerarToken(Usuario usuario) {
-        // Buscar el usuario en la base de datos
         Usuario usuarioDb = usuarioRepository.findByUsername(usuario.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        // Validar si la contraseña coincide
         if (!passwordEncoder.matches(usuario.getPassword(), usuarioDb.getPassword())) {
             throw new RuntimeException("Contraseña incorrecta");
         }

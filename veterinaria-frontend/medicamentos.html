@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Medicamentos - VetSystem</title>
+    <title>Medicamentos y Recetas - VetSystem Pro</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
@@ -18,9 +18,42 @@
     </nav>
 
     <div class="main-container">
-        <h1>Inventario de Medicamentos</h1>
+        <h1>Emisión de Recetas Médicas</h1>
         
-        <div class="card">
+        <div class="card no-print">
+            <h3>Detalles Completos de la Prescripción</h3>
+            <form id="formReceta">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <label>Nombre del Médico Veterinario</label>
+                        <input type="text" id="recetaDoctor" required placeholder="Ej: Dr. Carlos Mendoza">
+                    </div>
+                    <div class="input-group">
+                        <label>Dueño del Paciente</label>
+                        <input type="text" id="recetaDueno" required placeholder="Ej: Elton Joel">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Paciente (Mascota)</label>
+                    <input type="text" id="recetaPaciente" required placeholder="Ej: Firulais (Perro)">
+                </div>
+                
+                <div class="input-group">
+                    <label>Medicamentos y Dosis</label>
+                    <textarea id="recetaDosis" rows="5" required placeholder="Ej: 1. Amoxicilina 250mg - 1 pastilla c/8 hrs..."></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label>Recomendaciones Adicionales / Dieta</label>
+                    <textarea id="recetaRecomendaciones" rows="2" placeholder="Ej: Reposo absoluto."></textarea>
+                </div>
+                
+                <button type="button" id="btnGenerarReceta" class="btn-success">Generar e Imprimir Receta Completa</button>
+            </form>
+        </div>
+        <!-- En tu medicamentos.html, pon la clase "solo-admin" en la tarjeta de registro -->
+        <div class="card solo-admin">
             <h3>Registrar Medicamento</h3>
             <form id="formMedicamento">
                 <div class="input-group">
@@ -38,26 +71,55 @@
                 <button type="submit" class="btn-success">Guardar Medicamento</button>
             </form>
         </div>
-
-        <div class="card">
-            <h3>Stock Disponible</h3>
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Stock</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaMedicamentos">
-                    <!-- Dinámico -->
-                </tbody>
-            </table>
+        <div id="voucherImprimible" class="voucher" style="display:none;">
+            <div class="voucher-header">
+                <h2 style="margin-bottom: 5px;">🐾 VETSYSTEM PRO CLINIC</h2>
+                <p style="margin: 0; font-size: 1.1em;" id="outDoctor"></p>
+                <p style="margin: 0; font-size: 0.9em; color: #555;">Registro Médico Veterinario</p>
+                <hr style="border-top: 2px solid #000; margin: 15px 0;">
+            </div>
+            
+            <div class="voucher-body">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.9em;">
+                    <div><strong>Fecha:</strong> <span id="outFecha"></span></div>
+                    <div><strong>Hora:</strong> <span id="outHora"></span></div>
+                </div>
+                
+                <div style="background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-bottom: 20px;">
+                    <p style="margin: 5px 0;"><strong>Dueño:</strong> <span id="outDueno"></span></p>
+                    <p style="margin: 5px 0;"><strong>Paciente:</strong> <span id="outPaciente"></span></p>
+                </div>
+                
+                <h3 style="font-size: 1.4em; margin-bottom: 10px;">Rx</h3>
+                <p id="outDosis" style="white-space: pre-line; line-height: 1.6; margin-bottom: 25px; padding-left: 15px;"></p>
+                
+                <div style="border-left: 3px solid #000; padding-left: 10px;">
+                    <p style="margin-bottom: 5px;"><strong>Indicaciones Generales:</strong></p>
+                    <p id="outRecomendaciones" style="white-space: pre-line; margin-top: 0; font-style: italic;"></p>
+                </div>
+            </div>
+            
+            <div class="voucher-footer">
+                <p>___________________________________</p>
+                <p>Firma y Sello del Médico Veterinario</p>
+                <p style="font-size: 0.8em; margin-top: 15px;">Gracias por confiar en VetSystem Pro.</p>
+            </div>
         </div>
     </div>
 
     <script src="js/api.js"></script>
     <script src="js/medicamentos.js"></script>
+
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #voucherImprimible, #voucherImprimible * { visibility: visible; }
+            #voucherImprimible { position: absolute; left: 0; top: 0; width: 100%; border: none;}
+            .navbar { display: none !important; }
+        }
+        .voucher { background: #fff; padding: 30px; border: 2px dashed #333; max-width: 600px; margin: 20px auto; color: #000; font-family: monospace; }
+        .voucher-header { text-align: center; }
+        .voucher-footer { text-align: center; margin-top: 40px;}
+    </style>
 </body>
 </html>

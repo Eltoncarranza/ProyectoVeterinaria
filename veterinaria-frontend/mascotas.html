@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mascotas - VetSystem</title>
+    <title>Mascotas - VetSystem Pro</title>
+    <!-- Aquí se enlaza tu hoja de estilos para que no se vea feo -->
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
@@ -18,7 +19,7 @@
         <button id="btnCerrarSesion" class="btn-danger">Cerrar Sesión</button>
     </nav>
 
-    <!-- Contenido Principal -->
+    <!-- Contenedor Principal que centra el contenido -->
     <div class="main-container">
         <h1>Gestión de Mascotas</h1>
         
@@ -26,14 +27,34 @@
             <h3>Registrar Nueva Mascota</h3>
             <form id="formMascota">
                 <div class="input-group">
-                    <label>Nombre</label>
+                    <label>Dueño (Cliente)</label>
+                    <select id="clienteId" required>
+                        <option value="">Cargando clientes...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Nombre de la Mascota</label>
                     <input type="text" id="nombre" required>
+                </div>
+                <div class="input-group">
+                    <label>Especie</label>
+                    <select id="especieSelect" required>
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                    <!-- Este campo solo aparece si se selecciona "Otros" -->
+                    <input type="text" id="especieOtro" placeholder="Especifique la especie" style="display:none; margin-top: 10px;">
                 </div>
                 <div class="input-group">
                     <label>Raza</label>
                     <input type="text" id="raza" required>
                 </div>
-                <button type="submit" class="btn-success">Guardar</button>
+                <div class="input-group">
+                    <label>Edad (Años)</label>
+                    <input type="number" id="edad" required min="0">
+                </div>
+                <button type="submit" class="btn-success">Guardar Mascota</button>
             </form>
         </div>
 
@@ -44,7 +65,9 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
+                        <th>Especie</th>
                         <th>Raza</th>
+                        <th>Dueño (ID)</th>
                     </tr>
                 </thead>
                 <tbody id="tablaMascotas">
@@ -54,6 +77,7 @@
         </div>
     </div>
 
+    <!-- Scripts necesarios -->
     <script src="js/api.js"></script>
     <script src="js/mascotas.js"></script>
 </body>

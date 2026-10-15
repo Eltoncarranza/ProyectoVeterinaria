@@ -15,6 +15,8 @@ public class AuthController {
 
     @PostMapping("/registrar")
     public ResponseEntity<Usuario> registrar(@RequestBody Usuario usuario) {
+        usuario.setRol("USER");
+
         Usuario nuevoUsuario = usuarioService.guardarUsuario(usuario);
         return ResponseEntity.ok(nuevoUsuario);
     }
