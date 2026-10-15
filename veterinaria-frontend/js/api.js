@@ -2,8 +2,6 @@ const GATEWAY_URL = "http://localhost:8080";
 
 function verificarSesion() {
     const token = localStorage.getItem('tokenJWT');
-    
-    // Si no hay token Y NO ESTAMOS en la página de login o registro, patear al login
     const paginaActual = window.location.pathname;
     const esAuthPage = paginaActual.includes('login.html') || paginaActual.includes('registro.html');
 
@@ -14,7 +12,6 @@ function verificarSesion() {
     return token;
 }
 
-// Ejecutar la verificación inmediatamente al cargar cualquier script
 verificarSesion();
 
 async function peticionSegura(endpoint, opciones = {}) {
@@ -47,11 +44,6 @@ async function peticionSegura(endpoint, opciones = {}) {
         throw error;
     }
 }
-// ==========================================
-// UTILIDADES DE CONTROL DE ROLES (ADMIN / USER)
-// ==========================================
-
-// Decodifica el Token JWT para extraer información (como el rol o el username)
 function obtenerPayloadJWT() {
     const token = localStorage.getItem('tokenJWT');
     if (!token) return null;
@@ -68,14 +60,12 @@ function obtenerPayloadJWT() {
     }
 }
 
-// Devuelve el rol del usuario ('ADMIN' o 'USER')
 function obtenerRolUsuario() {
     const payload = obtenerPayloadJWT();
-    // Si tu token guarda el rol en una propiedad llamada 'rol', 'role' o 'authorities', cámbiala aquí:
+
     return payload ? (payload.rol || payload.role || 'USER') : 'USER';
 }
 
-// Valida si el usuario actual es Administrador
 function esAdmin() {
     const rol = obtenerRolUsuario();
     return rol.toUpperCase() === 'ADMIN';

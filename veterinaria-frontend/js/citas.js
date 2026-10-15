@@ -2,7 +2,7 @@ if (typeof verificarSesion === 'function') verificarSesion();
 if (typeof configurarCerrarSesion === 'function') configurarCerrarSesion();
 
 let diccionarioMascotas = {}; 
-let todasLasCitas = []; // Guardamos las citas globalmente para los filtros
+let todasLasCitas = []; 
 
 document.addEventListener("DOMContentLoaded", async () => {
     configurarFechaMinima();
@@ -37,7 +37,6 @@ async function cargarMascotasDropdown() {
     }
 }
 
-// 1. AGENDAR CITA
 document.getElementById("formCita").addEventListener("submit", async (e) => {
     e.preventDefault();
     
@@ -72,7 +71,6 @@ document.getElementById("formCita").addEventListener("submit", async (e) => {
     }
 });
 
-// 2. CAMBIAR ESTADO DE LA CITA
 async function cambiarEstadoCita(idCita, nuevoEstado) {
     try {
         const respuesta = await peticionSegura(`/api/citas/${idCita}`, {
@@ -90,11 +88,10 @@ async function cambiarEstadoCita(idCita, nuevoEstado) {
     }
 }
 
-// Función auxiliar para obtener el inicio de la semana (Lunes)
 function obtenerInicioSemana(fecha) {
     const d = new Date(fecha);
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajustar si es domingo
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
     return new Date(d.setDate(diff));
 }
 
@@ -111,7 +108,6 @@ async function cargarCitas() {
     }
 }
 
-// 3. RENDERIZAR AGENDA ORGANIZADA POR SEMANA
 function renderizarAgenda(citas) {
     const contenedor = document.getElementById("agendaContenedor");
     contenedor.innerHTML = "";
@@ -121,7 +117,6 @@ function renderizarAgenda(citas) {
         return;
     }
 
-    // Ordenar de más antigua a más reciente
     citas.sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora));
 
     // Agrupar por semanas
@@ -154,11 +149,9 @@ function renderizarAgenda(citas) {
         semanasMap[claveSemana].citas.push(c);
     });
 
-    // Dibujar los bloques semanales en el HTML
     Object.keys(semanasMap).sort().forEach(clave => {
         const grupo = semanasMap[clave];
         
-        // Cabecera de la semana
         const seccionSemana = document.createElement("div");
         seccionSemana.style.gridColumn = "1 / -1";
         seccionSemana.innerHTML = `
@@ -168,7 +161,6 @@ function renderizarAgenda(citas) {
         `;
         contenedor.appendChild(seccionSemana);
 
-        // Grid interno para las tarjetas de esa semana específica
         const gridSemana = document.createElement("div");
         gridSemana.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; width: 100%; grid-column: 1 / -1;";
 
@@ -200,45 +192,54 @@ function renderizarAgenda(citas) {
             tarjeta.style.cssText = `background: #ffffff; border-left: 5px solid ${colorBorde}; border-radius: 8px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; opacity: ${esCumplida ? '0.75' : '1'};`;
             
             tarjeta.innerHTML = `
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div style="background: #e6fcf5; color: #0ca678; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em;">
-                            ID: #${c.id}
-                        </div>
-                        <div>${badgeEstado}</div>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                        <div style="background: ${esCumplida ? '#868e96' : '#20c997'}; color: white; padding: 8px 12px; border-radius: 8px; text-align: center; min-width: 50px;">
-                            <div style="font-size: 0.75em; line-height: 1;">${mes}</div>
-                            <div style="font-size: 1.3em; font-weight: bold; line-height: 1.1;">${dia}</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.85em; color: #868e96; text-transform: capitalize;">${diaSemana} - <strong>${hora}</strong></div>
-                            <div style="font-size: 1.1em; font-weight: bold; color: #343a40;">🐾 ${nombreMascota}</div>
-                        </div>
-                    </div>
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="background: #e6fcf5; color: #0ca678; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em;">
+                ID: #${c.id}
+            </div>
+            <div>${badgeEstado}</div>
+        </div>
+        
+        <div style="font-size: 1.1em; font-weight: bold; color: #343a40;">🐾 ${nombreMascota}</div>
+        <p style="margin: 10px 0; font-size: 0.95em; color: #495057;"><strong>Motivo:</strong> ${c.motivo}</p>
+    </div>
 
-                    <p style="margin: 0 0 15px 0; font-size: 0.95em; color: #495057; background: #f8f9fa; padding: 10px; border-radius: 6px;">
-                        <strong>Motivo:</strong> ${c.motivo}
-                    </p>
-                </div>
-
-                <div>
-                    ${!esCumplida ? `
-                        <button onclick="cambiarEstadoCita(${c.id}, 'CUMPLIDA')" style="width: 100%; background: #2b8a3e; color: white; border: none; padding: 9px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                            Dar por Terminada / Cumplida ✔
-                        </button>
-                    ` : `
-                        <button onclick="cambiarEstadoCita(${c.id}, 'PENDIENTE')" style="width: 100%; background: #ced4da; color: #495057; border: none; padding: 7px; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: bold;">
-                            Marcar como Pendiente ↺
-                        </button>
-                    `}
-                </div>
-            `;
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+        ${!esCumplida ? `
+            <button onclick="cambiarEstadoCita(${c.id}, 'CUMPLIDA')" style="background: #2b8a3e; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                Dar por Terminada ✔
+            </button>
+        ` : `
+            <button onclick="cambiarEstadoCita(${c.id}, 'PENDIENTE')" style="background: #ced4da; color: #495057; border: none; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                Marcar como Pendiente ↺
+            </button>
+        `}
+        
+        <button class="solo-admin" onclick="eliminarCita(${c.id})" style="background: #fa5252; color: white; border: none; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            Eliminar Cita 🗑️
+        </button>
+    </div>
+`;
             gridSemana.appendChild(tarjeta);
         });
 
         contenedor.appendChild(gridSemana);
     });
+}
+async function eliminarCita(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar esta cita de la agenda?")) {
+        try {
+            const respuesta = await peticionSegura(`/api/citas/${id}`, { method: "DELETE" });
+            
+            if (respuesta && respuesta.ok) {
+                alert("Cita eliminada correctamente.");
+                await cargarCitas();
+            } else {
+                alert("Error al eliminar la cita en el servidor.");
+            }
+        } catch (e) {
+            console.error("Error de red al eliminar la cita:", e);
+            alert("Error de conexión al intentar eliminar.");
+        }
+    }
 }

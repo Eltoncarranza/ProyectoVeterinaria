@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     if (typeof configurarCerrarSesion === 'function') configurarCerrarSesion();
     
-    // Lógica para mostrar/ocultar el input de "Otras" especies
     const especieSelect = document.getElementById("especieSelect");
     const especieOtro = document.getElementById("especieOtro");
     
@@ -39,7 +38,6 @@ async function cargarClientesDropdown() {
 document.getElementById("formMascota").addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    // Determinar la especie final
     const especieSelect = document.getElementById("especieSelect").value;
     const especieFinal = especieSelect === "Otros" ? document.getElementById("especieOtro").value : especieSelect;
 
@@ -90,11 +88,7 @@ async function cargarMascotas() {
     if (typeof configurarCerrarSesion === 'function') configurarCerrarSesion();
     cargarClientes();
 
-    // ==========================================
-    // APLICAR RESTRICCIÓN DE ROLES EN LA VISTA
-    // ==========================================
     if (!esAdmin()) {
-        // Oculta automáticamente cualquier elemento que tenga la clase ".solo-admin"
         document.querySelectorAll('.solo-admin').forEach(elemento => {
             elemento.style.display = 'none';
         });

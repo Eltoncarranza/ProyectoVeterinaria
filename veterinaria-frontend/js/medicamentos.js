@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Control de sesión y roles
     if (typeof configurarCerrarSesion === 'function') {
         configurarCerrarSesion();
     }
 
-    // Ocultar elementos exclusivos de ADMIN si el usuario es USER regular
     if (typeof esAdmin === 'function' && !esAdmin()) {
         document.querySelectorAll('.solo-admin').forEach(elemento => {
             elemento.style.display = 'none';
@@ -14,9 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const formMedicamento = document.getElementById('formMedicamento');
     const tablaMedicamentos = document.getElementById('tablaMedicamentos');
 
-    // ==========================================
-    // 2. GESTIÓN DEL INVENTARIO DE MEDICAMENTOS
-    // ==========================================
     let medicamentosDB = JSON.parse(localStorage.getItem('medicamentosMockDB')) || [];
 
     function renderizarTabla() {
@@ -62,9 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderizarTabla();
 
-    // ==========================================
-    // 3. GENERACIÓN E IMPRESIÓN DE RECETAS
-    // ==========================================
     const btnGenerarReceta = document.getElementById("btnGenerarReceta");
 
     if (btnGenerarReceta) {

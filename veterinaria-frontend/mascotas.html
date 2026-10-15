@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Mascotas - VetSystem Pro</title>
-    <!-- Aquí se enlaza tu hoja de estilos para que no se vea feo -->
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
-    <!-- Menú de Navegación Superior -->
     <nav class="navbar">
         <div class="nav-brand">🐾 VetSystem Pro</div>
         <div class="nav-links">
@@ -18,8 +16,6 @@
         </div>
         <button id="btnCerrarSesion" class="btn-danger">Cerrar Sesión</button>
     </nav>
-
-    <!-- Contenedor Principal que centra el contenido -->
     <div class="main-container">
         <h1>Gestión de Mascotas</h1>
         
@@ -43,7 +39,6 @@
                         <option value="Gato">Gato</option>
                         <option value="Otros">Otros</option>
                     </select>
-                    <!-- Este campo solo aparece si se selecciona "Otros" -->
                     <input type="text" id="especieOtro" placeholder="Especifique la especie" style="display:none; margin-top: 10px;">
                 </div>
                 <div class="input-group">
@@ -76,8 +71,6 @@
             </table>
         </div>
     </div>
-
-    <!-- Scripts necesarios -->
     <script src="js/api.js"></script>
     <script src="js/mascotas.js"></script>
 </body>

@@ -1,6 +1,4 @@
-// ==========================================
-// LÓGICA PARA EL LOGIN
-// ==========================================
+
 const formLogin = document.getElementById('formLogin');
 
 if (formLogin) {
@@ -32,14 +30,11 @@ if (formLogin) {
     });
 }
 
-// ==========================================
-// LÓGICA PARA EL REGISTRO (AQUÍ ESTABA EL FALLO)
-// ==========================================
 const formRegistro = document.getElementById('formRegistro');
 
 if (formRegistro) {
     formRegistro.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evita que la página se recargue
+        e.preventDefault(); 
         
         const username = document.getElementById('regUsername').value;
         const password = document.getElementById('regPassword').value;
@@ -47,11 +42,10 @@ if (formRegistro) {
         const successMsg = document.getElementById('successMsg');
 
         try {
-            // Hacemos POST al endpoint de registro a través del Gateway
             const respuesta = await fetch('http://localhost:8080/api/auth/registrar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, rol }) // Mapea con tu entidad Usuario en Java
+                body: JSON.stringify({ username, password, rol }) 
             });
 
             if (respuesta.ok) {
@@ -59,7 +53,6 @@ if (formRegistro) {
                 successMsg.style.color = 'green';
                 successMsg.textContent = '¡Cuenta creada! Redirigiendo al login...';
                 
-                // Redirigir al login después de 2 segundos para que el usuario ingrese
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 2000);

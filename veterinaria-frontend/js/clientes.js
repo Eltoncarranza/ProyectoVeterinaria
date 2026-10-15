@@ -1,11 +1,93 @@
 if (typeof verificarSesion === 'function') verificarSesion();
 if (typeof configurarCerrarSesion === 'function') configurarCerrarSesion();
+if (typeof verificarSesion === 'function') verificarSesion();
+if (typeof configurarCerrarSesion === 'function') configurarCerrarSesion();
 
+document.addEventListener("DOMContentLoaded", () => {
+    cargarClientes();
+
+    if (typeof esAdmin === 'function' && !esAdmin()) {
+        document.querySelectorAll('.solo-admin').forEach(el => {
+            el.style.display = 'none';
+        });
+    }
+});
+
+document.getElementById("formCliente")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const cliente = {
+        dni: document.getElementById("dniCliente").value, 
+        nombre: document.getElementById("nombreCliente").value,
+        apellidos: document.getElementById("apellidosCliente").value, 
+        telefono: document.getElementById("telefonoCliente").value,
+        email: document.getElementById("emailCliente").value
+    };
+
+    const respuesta = await peticionSegura("/api/clientes", {
+        method: "POST",
+        body: JSON.stringify(cliente)
+    });
+
+    if (respuesta && respuesta.ok) {
+        document.getElementById("formCliente").reset();
+        alert("Cliente registrado exitosamente.");
+        cargarClientes();
+    } else {
+        alert("Error al registrar cliente en el sistema.");
+    }
+});
+
+async function cargarClientes() {
+    const respuesta = await peticionSegura("/api/clientes", { method: "GET" });
+
+    if (respuesta && respuesta.ok) {
+        const data = await respuesta.json();
+        const tbody = document.getElementById("tablaClientes");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        
+        data.forEach(c => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${c.id}</td>
+                    <td>${c.dni || 'S/N'}</td>
+                    <td>${c.nombre}</td>
+                    <td>${c.apellidos || ''}</td>
+                    <td>${c.telefono || ''}</td>
+                    <td>${c.email || ''}</td>
+                    <td>
+                        <button class="btn-danger solo-admin" onclick="eliminarCliente(${c.id})" style="background: #fa5252; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            Eliminar 🗑️
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        if (typeof esAdmin === 'function' && !esAdmin()) {
+            document.querySelectorAll('.solo-admin').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+    }
+}
+
+async function eliminarCliente(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
+        const respuesta = await peticionSegura(`/api/clientes/${id}`, { method: "DELETE" });
+        if (respuesta && respuesta.ok) {
+            alert("Cliente eliminado con éxito.");
+            cargarClientes();
+        } else {
+            alert("Error al eliminar el cliente.");
+        }
+    }
+}
 document.addEventListener("DOMContentLoaded", () => {
     cargarClientes();
 });
 
-// 1. CONSUMO API RENIEC CON FALLBACK
 document.getElementById('btnBuscarDni')?.addEventListener('click', async () => {
     const dni = document.getElementById('dniCliente').value;
     const btnBuscar = document.getElementById('btnBuscarDni');
@@ -42,7 +124,6 @@ document.getElementById('btnBuscarDni')?.addEventListener('click', async () => {
     }
 });
 
-// 2. GUARDAR EL CLIENTE
 document.getElementById("formCliente").addEventListener("submit", async (e) => {
     e.preventDefault();
     
@@ -68,7 +149,6 @@ document.getElementById("formCliente").addEventListener("submit", async (e) => {
     }
 });
 
-// 3. CARGAR LA TABLA DE CLIENTES
 async function cargarClientes() {
     const respuesta = await peticionSegura("/api/clientes", { method: "GET" });
 
@@ -77,26 +157,38 @@ async function cargarClientes() {
         const tbody = document.getElementById("tablaClientes");
         tbody.innerHTML = "";
         
-        data.forEach(c => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${c.id}</td>
-                    <td>${c.dni || 'S/N'}</td>
-                    <td>${c.nombre}</td>
-                    <td>${c.apellidos || ''}</td>
-                    <td>${c.telefono || ''}</td>
-                    <td>${c.email || ''}</td>
-                </tr>
-            `;
-        });
+       data.forEach(c => {
+    tbody.innerHTML += `
+        <tr>
+            <td>${c.id}</td>
+            <td>${c.dni || 'S/N'}</td>
+            <td>${c.nombre}</td>
+            <td>${c.apellidos || ''}</td>
+            <td>${c.telefono || ''}</td>
+            <td>${c.email || ''}</td>
+            <td>
+                <button class="btn-danger solo-admin" onclick="eliminarCliente(${c.id})">Eliminar</button>
+            </td>
+        </tr>
+    `;
+});
+
+async function eliminarCliente(id) {
+    if (confirm("Seguradok kadi a kayatmo nga ikkaten daytoy a kliyente?")) {
+        const res = await peticionSegura(`/api/clientes/${id}`, { method: "DELETE" });
+        if (res && res.ok) {
+            alert("Naikkaten ti kliyente!");
+            cargarClientes();
+        } else {
+            alert("Biddut iti panangikkat iti kliyente.");
+        }
     }
-}document.addEventListener("DOMContentLoaded", () => {
+}
+
+document.addEventListener("DOMContentLoaded", () => {
     if (typeof configurarCerrarSesion === 'function') configurarCerrarSesion();
     cargarClientes();
 
-    // ==========================================
-    // APLICAR RESTRICCIÓN DE ROLES EN LA VISTA
-    // ==========================================
     if (!esAdmin()) {
         // Oculta automáticamente cualquier elemento que tenga la clase ".solo-admin"
         document.querySelectorAll('.solo-admin').forEach(elemento => {
@@ -105,3 +197,4 @@ async function cargarClientes() {
         console.warn("Modo Usuario regular: Acciones de administración restringidas.");
     }
 });
+    }}
