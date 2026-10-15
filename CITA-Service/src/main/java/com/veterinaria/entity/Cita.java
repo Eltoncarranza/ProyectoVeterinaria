@@ -1,5 +1,6 @@
 package com.veterinaria.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ public class Cita {
     private Long id;
     private Long clienteId;
     private Long mascotaId;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaHora;
     private String motivo;
     private String estado;

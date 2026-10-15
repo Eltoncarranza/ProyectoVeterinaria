@@ -6,51 +6,28 @@ spring:
     name: gateway-service
   cloud:
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origins:
-              - "http://127.0.0.1:5500"
-              - "http://localhost:5500"
-            allowed-methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowed-headers:
-              - "*"
-            allow-credentials: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
       routes:
-        - id: cliente-route
-          uri: lb://CLIENTE-SERVICE
+        - id: identity-service
+          uri: lb://IDENTITY-Service
           predicates:
-          - Path=/api/clientes, /api/clientes/**
-
-        - id: mascota-route
-          uri: lb://MASCOTA-SERVICE
+            - Path=/api/auth/**
+        - id: cliente-service
+          uri: lb://CLIENTE-Service
           predicates:
-            - Path=/api/mascotas, /api/mascotas/**
-
+            - Path=/api/clientes/**
+        - id: mascota-service
+          uri: lb://MASCOTA-Service
+          predicates:
+            - Path=/api/mascotas/**
         - id: cita-service
-          uri: lb://CITA-SERVICE
+          uri: lb://CITA-Service
           predicates:
             - Path=/api/citas/**
 
-        - id: medicamento-service
-          uri: lb://MEDICAMENTO-SERVICE
-          predicates:
-            - Path=/api/medicamentos/**
-
-        - id: identity-service
-          uri: lb://IDENTITY-SERVICE
-          predicates:
-            - Path=/api/auth/**
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  secret: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+

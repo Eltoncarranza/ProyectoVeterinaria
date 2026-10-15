@@ -2,54 +2,44 @@ package com.veterinaria.filter;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 
 @Component
-public class AuthenticationFilter extends OncePerRequestFilter {
+public class AuthenticationFilter implements GlobalFilter, Ordered {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:TuClaveSecretaSuperSeguraYExtensaParaElTokenJWTDeLaVeterinaria2026}")
     private String secret;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        ServerHttpRequest request = exchange.getRequest();
+        String path = request.getURI().getPath();
 
-        // 🔥 VITAL: Añadir cabeceras CORS en TODAS las respuestas para evitar bloqueos del navegador
-        response.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-
-        // 1. Permitir peticiones de prueba preflight (CORS)
-        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
+        // 1. Permitir acceso libre a las rutas de autenticación, clientes, mascotas y citas
+        if (path.contains("/api/auth") || path.contains("/api/clientes") || path.contains("/api/mascotas") || path.contains("/api/citas")) {
+            return chain.filter(exchange);
         }
 
-        String path = request.getRequestURI();
-
-        // 2. Dejar pasar libremente las rutas de Login y Registro
-        if (path.startsWith("/api/auth")) {
-            filterChain.doFilter(request, response);
-            return;
+        // 2. Validar cabecera Authorization en rutas protegidas
+        if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+            return onError(exchange, HttpStatus.UNAUTHORIZED);
         }
 
-        // 3. Validar Token en las rutas protegidas
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
+        String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return; // Bloquea con 401 si no trae el pase VIP
+            return onError(exchange, HttpStatus.UNAUTHORIZED);
         }
 
         String token = authHeader.substring(7);
@@ -58,11 +48,20 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return; // Bloquea si el token es falso o expiró
+            return onError(exchange, HttpStatus.UNAUTHORIZED);
         }
 
-        // 4. Si todo es correcto, la petición avanza hacia el microservicio
-        filterChain.doFilter(request, response);
+        return chain.filter(exchange);
+    }
+
+    private Mono<Void> onError(ServerWebExchange exchange, HttpStatus status) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(status);
+        return response.setComplete();
+    }
+
+    @Override
+    public int getOrder() {
+        return -1; // Ejecutar este filtro al principio de la cadena
     }
 }
